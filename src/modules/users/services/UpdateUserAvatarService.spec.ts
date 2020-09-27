@@ -5,16 +5,22 @@ import FakeUsersRepository from '../repositories/fakes/FakeUsersRepository';
 
 import UpdateUserAvatarService from './UpdateUserAvatarService';
 
-describe('UpdataUserAvatar', () => {
-  it('should be able to create a new user', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeStorageProvider = new FakeSorageProvider();
+let fakeUsersRepository: FakeUsersRepository;
+let fakeStorageProvider: FakeSorageProvider;
+let updateUserAvatar: UpdateUserAvatarService;
 
-    const updateUserAvatar = new UpdateUserAvatarService(
+describe('UpdataUserAvatar', () => {
+  beforeEach(() => {
+    fakeUsersRepository = new FakeUsersRepository();
+    fakeStorageProvider = new FakeSorageProvider();
+
+    updateUserAvatar = new UpdateUserAvatarService(
       fakeUsersRepository,
       fakeStorageProvider,
     );
+  });
 
+  it('should be able to create a new user', async () => {
     const user = await fakeUsersRepository.create({
       name: 'Jhon Doe',
       email: 'JhonDoe@exemple.com',
@@ -30,14 +36,6 @@ describe('UpdataUserAvatar', () => {
   });
 
   it('should not be able to update from non existing user', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeStorageProvider = new FakeSorageProvider();
-
-    const updateUserAvatar = new UpdateUserAvatarService(
-      fakeUsersRepository,
-      fakeStorageProvider,
-    );
-
     await expect(
       updateUserAvatar.execute({
         user_id: 'non-existing-user',
@@ -47,15 +45,7 @@ describe('UpdataUserAvatar', () => {
   });
 
   it('should delete old avatar when updating new one', async () => {
-    const fakeUsersRepository = new FakeUsersRepository();
-    const fakeStorageProvider = new FakeSorageProvider();
-
     const deleteFile = jest.spyOn(fakeStorageProvider, 'deleteFile');
-
-    const updateUserAvatar = new UpdateUserAvatarService(
-      fakeUsersRepository,
-      fakeStorageProvider,
-    );
 
     const user = await fakeUsersRepository.create({
       name: 'Jhon Doe',

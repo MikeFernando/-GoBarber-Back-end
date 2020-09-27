@@ -4,7 +4,7 @@ import { verify } from 'jsonwebtoken';
 import authConfig from '@config/auth';
 import AppError from '@shared/errors/AppError';
 
-interface TokenPayload {
+interface ITokenPayload {
   iat: number;
   exp: number;
   sub: string;
@@ -26,7 +26,7 @@ export default function ensureAuthenticated(
   try {
     const decoded = verify(token, authConfig.jwt.secret);
 
-    const { sub } = decoded as TokenPayload;
+    const { sub } = decoded as ITokenPayload;
 
     request.user = {
       id: sub,
@@ -34,6 +34,6 @@ export default function ensureAuthenticated(
 
     return next();
   } catch {
-    throw new Error('Invalid JWT token');
+    throw new AppError('Invalid JWT token');
   }
 }
